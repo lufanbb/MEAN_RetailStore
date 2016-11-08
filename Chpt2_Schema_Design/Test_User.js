@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var schema = require('./User_Schema.js');
+var schema = require('./Test_User_Schema.js');
 
 mongoose.connect('mongodb://localhost:27017/test');
 
@@ -7,7 +7,7 @@ var User = mongoose.model('User', schema, 'users');
 
 var user = new User({
 	name: 'John Smith',
-	email: 'john3smith.io'
+	email: 'john@smith.io'
 });
 
 user.save(function(error) {
