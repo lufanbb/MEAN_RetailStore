@@ -1,0 +1,17 @@
+{
+	"scripts": {
+		"test": "mocha ./test.js"
+	},
+	"dependencies": {
+		"express": "4.12.3",
+		"http-status":"0.1.8",
+		"mongoose": "4.0.3",
+		"wagner-core":"0.1.0"
+	},
+	"devDependencies": {
+		"superagent": "2.3.0",
+		"gulp": "3.8.11",
+		"gulp-mocha": "2.0.1",
+		"mocha": "2.2.4"
+	}
+}
