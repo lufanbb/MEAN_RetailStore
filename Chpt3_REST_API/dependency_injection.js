@@ -32,7 +32,7 @@ function setupApp(app, wagner) {
 	var routeHandler = wagner.invoke(function(User) {
 		return function(req, res) {
 			//console.log(util.inspect(req, false, null))
-			User.find({ name: req.params.id}, function(error, user) {
+			User.findOne({ name: req.params.id}, function(error, user) {
 				res.json({ user: user });
 			});
 		}
