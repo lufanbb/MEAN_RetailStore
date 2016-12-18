@@ -16,7 +16,6 @@ var productSchema = {
 			type: Number, 
 			required: true,
 			set : function(v) {
-				console.log('Test amount set : ' + v);
 				this.internal.approximatePriceUSD = 
 				v / (fx()[this.price.currency] || 1);
 				return v;
@@ -27,7 +26,6 @@ var productSchema = {
 			enum: ['USD', 'EUR', 'GBP'],
 			required: true,
 			set: function(v) {
-				console.log('Test currency set' + v);
 				this.internal.approximatePriceUSD = 
 				this.price.amount / (fx()[v] || 1)
 				return v;
