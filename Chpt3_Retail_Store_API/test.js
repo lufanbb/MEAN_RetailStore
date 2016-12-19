@@ -101,7 +101,7 @@ describe('Node API', function() {
 				picture: 'http://google.com'
 			},
 			data: {
-        		oauth: 'invalid',
+        		oauth: '10207631990870014',
 				cart: []
 			}
 		}];
