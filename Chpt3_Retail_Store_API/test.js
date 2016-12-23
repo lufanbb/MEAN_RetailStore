@@ -11,17 +11,33 @@ describe('Node API', function() {
 	var Category;
 	var Product;
 	var User;
+   // var Stripe;
 
 	before(function() {
 		var app = express();
 
 		//Bootstrap Server
 		models = require('./models')(wagner);
+		//This is much needed after adding Stripe API in api.js
+        require('./dependencies')(wagner);
 
         //Make Category model available in tests
         Category = models.Category;
         Product = models.Product;
         User = models.User;
+
+        //Make sure categories are empty before first test
+        Category.remove({}, function(error) {
+            assert.ifError(error);
+        });
+
+        Product.remove({}, function(error) {
+            assert.ifError(error);
+        });
+
+        User.remove({}, function(error){
+            assert.ifError(error);
+        });
         console.log('Before Time:', Date.now());
 
         //Have to attach the router with app.use before it attach to the application.
@@ -47,83 +63,31 @@ describe('Node API', function() {
 	});
 
 	beforeEach(function(done) {
-		//Make sure categories are empty before each test
-		Category.remove({}, function(error) {
-			assert.ifError(error);
-		});
-
-		Product.remove({}, function(error) {
-			assert.ifError(error);
-		});
-
-		User.remove({}, function(error){
-			assert.ifError(error);
-		});
-
-        var categories = [
-            { _id: 'Electronics' },
-            { _id: 'Phones', parent: 'Electronics' },
-            { _id: 'Laptops', parent: 'Electronics' },
-            { _id: 'Bacon' }
-        ];
-
-        var products = [
-            {
-                name: 'LG G4',
-                category: { _id: 'Phones', ancestors: ['Electronics', 'Phones']},
-                price: {
-                    amount: 300,
-                    currency: 'USD'
-                }
-            },
-            {
-                _id: '000000000000000000000001',
-            	name: 'Asus Zenbook Prime',
-                category: { _id: 'Laptops', ancestors: ['Electronics', 'Laptops']},
-                price: {
-                    amount: 2000,
-                    currency: 'USD'
-                }
-            },
-            {
-                name: 'Flying Pigs Farm Pasture Raised Prok Bacon',
-                category: { _id: 'Bacon', ancestors: ['Bacon'] },
-                price: {
-                    amount: 20,
-                    currency: 'USD'
-                }
-            }
-        ];
-
-        var users = [{
-        	profile: {
-        		username: 'vkarpov15',
-				picture: 'http://google.com'
-			},
-			data: {
-        		oauth: '10207631990870014',
-				cart: []
-			}
-		}];
-
-        /**
-		 * Can not emben Product into Category, User into Product
-		 * If do so the Product and User will be created later in the event loop
-		 * which will cause Product and User data isn't ready before test needs it.
-         */
-        Category.create(categories, function(error) {
-        	assert.ifError(error);
-		});
-        Product.create(products, function(error) {
-            assert.ifError(error);
-        });
-        User.create(users, function(error) {
-            assert.ifError(error);
-        });
 
         console.log('Before Each Time:', Date.now());
 
 		done();
+	});
+
+	afterEach(function(done) {
+
+
+        //Make sure categories are empty before each test
+        Category.remove({}, function(error) {
+            assert.ifError(error);
+        });
+
+        Product.remove({}, function(error) {
+            assert.ifError(error);
+        });
+
+        User.remove({}, function(error){
+            assert.ifError(error);
+            done();
+        });
+
+        console.log('After Each Time:', Date.now());
+
 	});
 
 	describe('Category APT', function() {
@@ -209,6 +173,39 @@ describe('Node API', function() {
 		});
 
 		it('Can load all products in a category with sub-categories', function(done) {
+            var categories = [
+                { _id: 'Electronics' },
+                { _id: 'Phones', parent: 'Electronics' },
+                { _id: 'Laptops', parent: 'Electronics' },
+                { _id: 'Bacon' }
+            ];
+
+            var products = [
+                {
+                    name: 'LG G4',
+                    category: { _id: 'Phones', ancestors: ['Electronics', 'Phones']},
+                    price: {
+                        amount: 300,
+                        currency: 'USD'
+                    }
+                },
+                {
+                    name: 'Asus Zenbook Prime',
+                    category: { _id: 'Laptops', ancestors: ['Electronics', 'Laptops']},
+                    price: {
+                        amount: 2000,
+                        currency: 'USD'
+                    }
+                },
+                {
+                    name: 'Flying Pigs Farm Pasture Raised Prok Bacon',
+                    category: { _id: 'Bacon', ancestors: ['Bacon'] },
+                    price: {
+                        amount: 20,
+                        currency: 'USD'
+                    }
+                }
+            ];
 
 			//Create 4 categories
 			Category.create(categories, function(error, categories) {
@@ -242,8 +239,8 @@ describe('Node API', function() {
 							//Should be sorted ascending order by price
 							assert.equal(result.products[0].name, 'LG G4');
 							assert.equal(result.products[1].name, 'Asus Zenbook Prime');
+                            done();
 						});
-						done();
 					});
 				});
 
@@ -252,8 +249,84 @@ describe('Node API', function() {
 	});
 
 	describe('USER CART API', function() {
-        var PRODUCT_ID = '000000000000000000000001';
 
+        beforeEach(function(done) {
+
+            var categories = [
+                { _id: 'Electronics' },
+                { _id: 'Phones', parent: 'Electronics' },
+                { _id: 'Laptops', parent: 'Electronics' },
+                { _id: 'Bacon' }
+            ];
+
+            var products = [
+                {
+                    _id: '000000000000000000000002',
+                    name: 'LG G4',
+                    category: { _id: 'Phones', ancestors: ['Electronics', 'Phones']},
+                    price: {
+                        amount: 300,
+                        currency: 'USD'
+                    }
+                },
+                {
+                    _id: '000000000000000000000001',
+                    name: 'Asus Zenbook Prime',
+                    category: { _id: 'Laptops', ancestors: ['Electronics', 'Laptops']},
+                    price: {
+                        amount: 2000,
+                        currency: 'USD'
+                    }
+                },
+                {
+                    name: 'Flying Pigs Farm Pasture Raised Prok Bacon',
+                    category: { _id: 'Bacon', ancestors: ['Bacon'] },
+                    price: {
+                        amount: 20,
+                        currency: 'USD'
+                    }
+                }
+            ];
+
+            var users = [{
+                profile: {
+                    username: 'vkarpov15',
+                    picture: 'http://google.com'
+                },
+                data: {
+                    oauth: '10207631990870014',
+                    cart: []
+                }
+            }];
+
+            /**
+             * Can not embed Product into Category, User into Product
+             * If do so the Product and User will be created later in the event loop
+             * which will cause Product and User data isn't ready before test needs it.
+             */
+            Category.create(categories, function(error) {
+                assert.ifError(error);
+            });
+            Product.create(products, function(error) {
+                assert.ifError(error);
+            });
+            User.create(users, function(error) {
+                assert.ifError(error);
+                done();
+            });
+
+            console.log('Before Each User Cart Time:', Date.now());
+
+        });
+
+        afterEach(function(done) {
+            //Make sure categories are empty before each test
+            console.log('After Each User Cart Time:', Date.now());
+			done();
+        });
+
+        var PRODUCT_ID = '000000000000000000000001';
+        var PRODUCT_ID2 = '000000000000000000000002'
 
         it('Can save users Cart', function(done) {
 
@@ -284,6 +357,7 @@ describe('Node API', function() {
         });
 
 		it ('Can load users cart', function(done) {
+
 			var url = URL_ROOT + '/me';
 
 			User.findOne({}, function(error, user) {
@@ -308,7 +382,53 @@ describe('Node API', function() {
 				});
 			});
 		});
+
+		it('Can checkout cart', function(done) {
+			var url = URL_ROOT + '/checkout';
+
+			//Set up data
+			User.findOne({}, function(error, user) {
+				assert.ifError(error);
+				user.data.cart = [{ product: PRODUCT_ID, quantity: 1 },
+								  { product: PRODUCT_ID2, quantity: 2}];
+				user.save(function(error) {
+					assert.ifError(error);
+
+					//Attempt to check out by posting to /api/v1/checkout
+					superagent.
+						post(url).
+						send({
+							//Fake stripe credentials. stripeToken can either be real credit card credentials
+							//or an encrypted token - in Production it will be an encrypted token.
+							stripeToken: {
+                                number: '4242424242424242',
+                                cvc: '123',
+                                exp_month: 12,
+                                exp_year: 2017
+                            }
+					}).end(function(error, res) {
+						assert.ifError(error);
+						assert.equal(res.status, status.OK);
+						var result;
+						assert.doesNotThrow(function() {
+							result = JSON.parse(res.text);
+						});
+
+						//API call gives us back a charge id.
+						assert.ok(result.id);
+
+						//Make sure stripe got the id, invode wagner to get the Stripe service
+						wagner.invoke(function(Stripe) {
+                            Stripe.charges.retrieve(result.id, function(error, charge) {
+                                assert.ifError(error);
+                                assert.ok(charge);
+                                assert.equal(charge.amount, 2600 * 100); //2000 USD
+                                done();
+                            });
+						});
+					});
+				});
+			});
+		});
 	});
-
-
 });
