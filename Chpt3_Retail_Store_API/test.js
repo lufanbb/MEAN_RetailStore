@@ -246,6 +246,69 @@ describe('Node API', function() {
 
 			});
 		});
+
+		it('Can search Product by text', function(done) {
+            var PRODUCT_ID = '000000000000000000000001';
+
+            var categories = [
+                { _id: 'Electronics' },
+                { _id: 'Phones', parent: 'Electronics' },
+                { _id: 'Laptops', parent: 'Electronics' },
+                { _id: 'Bacon' }
+            ];
+
+            var products = [
+                {
+                    name: 'LG G4',
+                    category: { _id: 'Phones', ancestors: ['Electronics', 'Phones']},
+                    price: {
+                        amount: 300,
+                        currency: 'USD'
+                    }
+                },
+                {
+                	_id: PRODUCT_ID,
+                    name: 'Asus Zenbook Prime',
+                    category: { _id: 'Laptops', ancestors: ['Electronics', 'Laptops']},
+                    price: {
+                        amount: 2000,
+                        currency: 'USD'
+                    }
+                },
+                {
+                    name: 'Flying Pigs Farm Pasture Raised Prok Bacon',
+                    category: { _id: 'Bacon', ancestors: ['Bacon'] },
+                    price: {
+                        amount: 20,
+                        currency: 'USD'
+                    }
+                }
+            ];
+            Category.create(categories, function(error, categories) {
+            	assert.ifError(error);
+			});
+            Product.create(products, function(error, products) {
+            	assert.ifError(error);
+			});
+
+			var url = URL_ROOT + '/product/text/asus';
+			//Get products whose name contains 'asus
+			superagent.get(url, function(error, res) {
+				assert.ifError(error);
+				assert.equal(res.status, status.OK);
+
+				var results;
+				assert.doesNotThrow(function() {
+					results = JSON.parse(res.text).products;
+				});
+
+				//Expect that we got the Zenbook Prime back
+				assert.equal(results.length, 1);
+				assert.equal(results[0]._id, PRODUCT_ID);
+				assert.equal(results[0].name, 'Asus Zenbook Prime');
+				done();
+			});
+		});
 	});
 
 	describe('USER CART API', function() {

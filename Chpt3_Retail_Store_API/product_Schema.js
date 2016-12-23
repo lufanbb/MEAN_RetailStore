@@ -42,6 +42,8 @@ module.exports = new mongoose.Schema(productSchema);
 module.exports.productSchema = productSchema;
 
 var schema = new mongoose.Schema(productSchema);
+//MongoDB won't allow you to use text search without an text index, so we need to create one.
+schema.index({ name: 'text' });
 
 var currencySymbols = {
 	'USD': '$',
