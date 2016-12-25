@@ -5,13 +5,17 @@ var _= require('underscore');
 module.exports = function(wagner) {
 	mongoose.connect('mongodb://localhost:27017/test');
 
+	wagner.factory('db', function() {
+		return mongoose;
+	});
+
 	var Category = mongoose.model('Category', require('./category_Schema'), 'categories');
-	var Product = mongoose.model('Product', require('./product_Schema'), 'products');
+	//var Product = mongoose.model('Product', require('./product_Schema'), 'products');
 	var User = mongoose.model('User', require('./user_Schema'), 'users');
 
 	var models = {
 		Category: Category,
-		Product: Product,
+		//Product: Product,
 		User: User
 	};
 
@@ -21,6 +25,8 @@ module.exports = function(wagner) {
 			return value;
 		});
 	});
+
+	wagner.factory('Product', require('./product_Schema'));
 
 	return models;
 };

@@ -11,20 +11,30 @@ describe('Node API', function() {
 	var Category;
 	var Product;
 	var User;
-   // var Stripe;
+    var Stripe;
 
 	before(function() {
 		var app = express();
 
 		//Bootstrap Server
-		models = require('./models')(wagner);
+		require('./models')(wagner);
 		//This is much needed after adding Stripe API in api.js
         require('./dependencies')(wagner);
 
-        //Make Category model available in tests
-        Category = models.Category;
-        Product = models.Product;
-        User = models.User;
+        var deps = wagner.invoke(function(Category, Product, Stripe, User) {
+        	return {
+        		Category: Category,
+				Product: Product,
+				Stripe: Stripe,
+				User: User
+			};
+		});
+
+        //Make all the Service available before the test begins
+        Category = deps.Category;
+        Product = deps.Product;
+        Stripe = deps.Stripe;
+        User = deps.User;
 
         //Make sure categories are empty before first test
         Category.remove({}, function(error) {
@@ -292,7 +302,7 @@ describe('Node API', function() {
 			});
 
 			var url = URL_ROOT + '/product/text/asus';
-			//Get products whose name contains 'asus
+			//Get products whose name contains 'asus'
 			superagent.get(url, function(error, res) {
 				assert.ifError(error);
 				assert.equal(res.status, status.OK);
@@ -481,13 +491,11 @@ describe('Node API', function() {
 						assert.ok(result.id);
 
 						//Make sure stripe got the id, invode wagner to get the Stripe service
-						wagner.invoke(function(Stripe) {
-                            Stripe.charges.retrieve(result.id, function(error, charge) {
-                                assert.ifError(error);
-                                assert.ok(charge);
-                                assert.equal(charge.amount, 2600 * 100); //2000 USD
-                                done();
-                            });
+						Stripe.charges.retrieve(result.id, function(error, charge) {
+							assert.ifError(error);
+							assert.ok(charge);
+							assert.equal(charge.amount, 2600 * 100); //2000 USD
+							done();
 						});
 					});
 				});

@@ -12,35 +12,34 @@ module.exports = function() {
 	};
 
 	var ping = function(callback) {
-		superagent,get(url, fucntion(error, res) {
+		superagent.get(url, function(error, res) {
+			// If error happens, ignore it because we'll try again in an hour
 			if (error) {
 				callback(error);
+                return;
 			}
 
-			return;
-
-
 			var results;
-
 			try{
-				results = JSON.parse(res.body.text);
-				_.each(rates, function(value, key) {
-					rates[key] = results[key];
+				results = JSON.parse(res.text);
+				_.each(results.rates, function(value, key) {
+					rates[key] = value;
 				});
 			} catch (e) {
 				if (callback) {
 					callback(e);
 				}
 			}
-		});	
+		});
 	};
-
+	// Repeat ping function every hour
 	setInterval(ping, 60 * 60 * 1000);
+	//Return the current state of the exchange rates
 	var ret = function() {
 		return rates;
 	};
 
 	ret.ping = ping;
 
-	return rat;
+	return ret;
 };
