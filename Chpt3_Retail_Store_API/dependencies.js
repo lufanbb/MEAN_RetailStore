@@ -1,4 +1,5 @@
 var Stripe = require('stripe');
+var fx = require('./fx');
 var wagner = require('wagner-core');
 
 module.exports = function(wagner) {
@@ -8,7 +9,10 @@ module.exports = function(wagner) {
         return stripe;
     });
 
+    wagner.factory('fx', fx);
+
     return {
-        Stripe: stripe
+        Stripe: stripe,
+        fx: fx
     };
 };
