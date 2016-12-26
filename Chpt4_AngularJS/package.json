@@ -1,0 +1,11 @@
+{
+	"scripts": {
+		"test": "mocha test.js",
+		"watch": "gulp watch"
+	},
+	"devDependencies": {
+		"browserify": "10.2.3",
+		"gulp": "3.8.11",
+		"gulp-browserify": "0.5.1"
+	}
+}
