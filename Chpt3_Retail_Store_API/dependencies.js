@@ -1,9 +1,10 @@
 var Stripe = require('stripe');
 var fx = require('./fx');
 var wagner = require('wagner-core');
+var Config = require('./config.json');
 
 module.exports = function(wagner) {
-    var stripe = Stripe(process.env.STRIPE_API_KEY);
+    var stripe = Stripe(Config.stripeKey);
 
     wagner.factory('Stripe', function() {
         return stripe;

@@ -1,3 +1,5 @@
+var Config = require('./config.json');
+
 function setupAuth(User, app) {
     var passport = require('passport');
     var FacebookStrategy = require('passport-facebook').Strategy;
@@ -15,8 +17,8 @@ function setupAuth(User, app) {
     //Facebook-specific
     passport.use(new FacebookStrategy(
         {
-            clientID: process.env.FACEBOOK_CLIENT_ID,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+            clientID: Config.facebookClientId,
+            clientSecret: Config.facebookClientSecret,
             callbackURL: 'http://localhost:3000/auth/facebook/callback',
             /**
              * profileFields is an necessary config in addition to this tutorial
@@ -48,7 +50,7 @@ function setupAuth(User, app) {
 
     //Setup Express middlewares
     app.use(require('express-session')({
-        secret: process.env.FACEBOOK_CLIENT_SECRET
+        secret: 'this is a secret'
     }));
     app.use(passport.initialize());
     app.use(passport.session());

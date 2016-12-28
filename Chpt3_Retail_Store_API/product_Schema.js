@@ -17,7 +17,6 @@ module.exports = function(db, fx) {
                 type: Number,
                 required: true,
                 set : function(v) {
-                    console.log('Test amount set : ' + v);
                     this.internal.approximatePriceUSD =
                         v / (fx()[this.price.currency] || 1);
                     return v;
@@ -28,7 +27,6 @@ module.exports = function(db, fx) {
                 enum: ['USD', 'EUR', 'GBP'],
                 required: true,
                 set: function(v) {
-                    console.log('Test currency set' + v);
                     this.internal.approximatePriceUSD =
                         this.price.amount / (fx()[v] || 1)
                     return v;

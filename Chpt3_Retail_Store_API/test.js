@@ -48,11 +48,9 @@ describe('Node API', function() {
         User.remove({}, function(error){
             assert.ifError(error);
         });
-        console.log('Before Time:', Date.now());
 
         //Have to attach the router with app.use before it attach to the application.
         app.use(function(req, res, next) {
-            console.log('Before User Middleware Time:', Date.now());
             User.findOne({}, function(error, user) {
                 assert.ifError(error);
                 req.user = user;
@@ -68,19 +66,10 @@ describe('Node API', function() {
 
 	after(function() {
 		//Shut the server down when we're done
-        console.log('After Time:', Date.now());
 		server.close();
 	});
 
-	beforeEach(function(done) {
-
-        console.log('Before Each Time:', Date.now());
-
-		done();
-	});
-
 	afterEach(function(done) {
-
 
         //Make sure categories are empty before each test
         Category.remove({}, function(error) {
@@ -95,8 +84,6 @@ describe('Node API', function() {
             assert.ifError(error);
             done();
         });
-
-        console.log('After Each Time:', Date.now());
 
 	});
 
@@ -161,9 +148,7 @@ describe('Node API', function() {
 					currency: 'USD'
 				}
 			};
-            console.log('[Can load a product by id] API Time:', Date.now());
 			Product.create(product, function(error, doc) {
-                console.log('{Callback}[Can load a product by id] API Time:', Date.now());
 				assert.ifError(error);
 				var url = URL_ROOT + '/product/id/' + PRODUCT_ID;
 				//Make an HTTP request to localhost:3000/product/id/000000000000000000000001
@@ -220,15 +205,12 @@ describe('Node API', function() {
 			//Create 4 categories
 			Category.create(categories, function(error, categories) {
 				assert.ifError(error);
-                console.log('[Can load all products in a category with sub-categories] API Time:', Date.now());
-				Product.create(products, function(error, products) {
-                    console.log('{Callback}[Can load all products in a category with sub-categories] API Time:', Date.now());
-					assert.ifError(error);
+               	Product.create(products, function(error, products) {
+                  	assert.ifError(error);
 					var url = URL_ROOT + '/product/category/Electronics';
 					//Make an HTTP request to localhost:3000/product/ancestor/Electronics
 					superagent.get(url, function(error, res) {
-                        console.log('{Superagent}{Callback}[Can load all products in a category with sub-categories] API Time:', Date.now());
-						assert.ifError(error);
+                    	assert.ifError(error);
 						var result;
 						assert.doesNotThrow(function() {
 							result = JSON.parse(res.text);
@@ -387,15 +369,6 @@ describe('Node API', function() {
                 assert.ifError(error);
                 done();
             });
-
-            console.log('Before Each User Cart Time:', Date.now());
-
-        });
-
-        afterEach(function(done) {
-            //Make sure categories are empty before each test
-            console.log('After Each User Cart Time:', Date.now());
-			done();
         });
 
         var PRODUCT_ID = '000000000000000000000001';
@@ -403,7 +376,6 @@ describe('Node API', function() {
 
         it('Can save users Cart', function(done) {
 
-            console.log('USER CART API Time:', Date.now());
             var url = URL_ROOT + '/me/cart';
 
             superagent.put(url).
