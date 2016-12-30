@@ -15,8 +15,7 @@ app.use('/api/v1', require('./api')(wagner));
  * first argument '/public' is to set up a virtual path
  * The second argument Angular is the actual path that contain the static file
  */
-
-app.use('/public', express.static('Angular'));
+app.use('/public', express.static('Angular', { maxAge: 4 * 60 * 60 * 1000 /* 4hrs */ }));
 
 app.listen(3000);
 
