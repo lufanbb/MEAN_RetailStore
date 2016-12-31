@@ -17,6 +17,10 @@ describe('Test Nac Bar', function() {
 	});
 
 	it('shows logged in users name', function(done) {
+		// Adding httpBackend passthrough for template request 
+		// to make sure static file request didn't get blocked.
+		httpBackend.whenGET('/public/template.html').passThrough();
+		
 		httpBackend.expectGET('/api/v1/me').respond({
 			user: { profile: {username: 'Johney' } }
 		});
@@ -24,9 +28,11 @@ describe('Test Nac Bar', function() {
 		element = compiler('<user-menu></user-menu>')(scope);
 		scope.$apply();
 
-		httpBackend.flush();
-		assert.notEqual(element.find('.user').css('display'), 'none');
-		assert.equal(element.find('.user').text().trim(), 'Current User: Johney');
-		done();
+		scope.$on('MyHttpController', function() {
+			httpBackend.flush();
+			assert.notEqual(element.find('.user').css('display'), 'none');
+			assert.equal(element.find('.user').text().trim(), 'Current User: Johney');
+			done();
+		});	
 	});
 });
