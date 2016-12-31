@@ -6,12 +6,18 @@ module.exports = function(config) {
 			//For ngMorckE2E
 			'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-mocks.js',
 			'./Angular/angular_app.js',
-			'./Angular/angular_test.js'
+			'./Angular/angular_test.js',
+			/**
+			 * This tells Karma to start a static web server and be ready to 
+			 * serve any HTML files that are in the current directory.
+			 */
+			{ pattern: './Angular/*.html', included: false, served: true }
 		],
 		frameworks: ['chai', 'mocha'],
 		browsers: ['Chrome'],
+		port: 9876,
 		proxies: {
-			'/public': 'http://localhost:3000'
+			'/public': 'http://localhost:9876/base/Angular'
 		}
 	});
 };
