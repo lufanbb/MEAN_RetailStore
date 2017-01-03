@@ -7,11 +7,14 @@ module.exports = function(config) {
 			'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-mocks.js',
 			'./Angular/angular_app.js',
 			'./Angular/angular_test.js',
+			'./Angular/bin/index.js',
+			'./Angular/test.js',
 			/**
 			 * This tells Karma to start a static web server and be ready to 
 			 * serve any HTML files that are in the current directory.
 			 */
-			{ pattern: './Angular/*.html', included: false, served: true }
+			{ pattern: './Angular/*.html', included: false, served: true },
+			{ pattern: './Angular/templates/*.html', included: false, served: true }
 		],
 		frameworks: ['chai', 'mocha'],
 		browsers: ['Chrome'],
