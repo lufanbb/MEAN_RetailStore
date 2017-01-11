@@ -5,11 +5,20 @@
 	<script type="text/javascript"
 		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js">	
 	</script>
+	<script type="text/javascript"
+		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-route.js">
+	</script>
 	<script type="text/javascript" src="/public/bin/index.js"></script>
 	<link rel="stylesheet" type="text/css" href="/public/css/mean-retail.css">
 	<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 </head>
 <body>
 	<user-menu></user-menu>
+	<!--Added ng-view for route
+		The $route service is usually used in conjunction with the ngView directive.
+		ngView is a directive that complements the $route service by including the rendered template of the current route into the main layout (index.html) file. Every time the current route changes, the included view changes with it according to the configuration of the $route service.
+		https://docs.angularjs.org/api/ngRoute/directive/ngView
+		-->
+	<div ng-view=""></div>
 </body>
 </html>

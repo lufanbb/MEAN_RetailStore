@@ -3,21 +3,35 @@ var directives = require('./directives');
 var services = require('./services');
 var _ = require('underscore');
 
-var app = /**
+var components = /**
 * mean-retail Module
 *
-* Build the mean-retail module
+* Build the mean-retail component module
 */
-angular.module('mean-retail', ['ng']);
+angular.module('mean-retail.components', ['ng', 'ngRoute']);
 
 _.each(controllers, function(controller, name) {
-	app.controller(name, controller);
+	components.controller(name, controller);
 });
 
 _.each(directives, function(directive, name) {
-	app.directive(name, directive);
+	components.directive(name, directive);
 });
 
 _.each(services, function(factory, name) {
-	app.factory(name, factory);
+	components.factory(name, factory);
 });
+
+var app = /**
+* mean-retail Module
+*
+* Build the mean-retail route module
+*/
+angular.module('mean-retail', ['mean-retail.components', 'ng', 'ngRoute']);
+
+app.config(['$routeProvider',function($routeProvider) {
+	$routeProvider.
+		when('/product/:id', {
+			template: '<product-details></product-details>'
+		});
+}]);
